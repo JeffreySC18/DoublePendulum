@@ -9,25 +9,57 @@ window = pygame.display.set_mode((Width, Height))
 # In pygame for some reason as you go down the y goes up :(
 grav = 981
 
-#Draw the simulation for me, anything I want to draw into the window will be done here, not the space, using pygame stuff
+
+# Draw the simulation for me, anything I want to draw into the window will be done here, not the space, using pygame stuff
 def draw(space, window, draw_options):
     window.fill("white")
     space.debug_draw(draw_options)
     pygame.display.update()
 
+
+# Creating rect(width and height of center, width, height
+def create_boundary(space, width, height):
+    rects = [
+        [(width / 2, height - 10), (width, 20)],
+        [(width / 2, 10), (width, 20)],
+        [(10, height / 2), (20, height)],
+        [(width - 10, height / 2), (20, height)]
+    ]
+
+    for pos, size in rects:
+        body = pymunk.Body(body_type=pymunk.Body.STATIC)
+        body.position = pos
+        shape = pymunk.Poly.create_box(body, size)
+        space.add(body, shape)
+
+
+# 0,0 is top left corner
+def create_ball(space, radius, mass):
+    body = pymunk.Body()
+    body.position = (300, 300)
+    shape = pymunk.Circle(body, radius)
+    shape.mass = mass
+    shape.color = (255, 0, 0, 100)
+    space.add(body, shape)
+    return shape
+
+
 def run(window, width, height):
     run = True
     clock = pygame.time.Clock()
     fps = 60
-    dt = 1/fps
+    dt = 1 / fps
 
-    #Simulated space in pymunk
+    # Simulated space in pymunk
     space = pymunk.Space()
     space.gravity = (0, grav)
 
-    #PyMunk doesn't inherntly draw, so this is the machinery to draw stuff
-    draw_options = pymunk.pygame_util.DrawOptions(window)
+    ball = create_ball(space, 30, 10)
 
+    create_boundary(space, width, height)
+
+    # PyMunk doesn't inherntly draw, so this is the machinery to draw stuff
+    draw_options = pymunk.pygame_util.DrawOptions(window)
     while run:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
