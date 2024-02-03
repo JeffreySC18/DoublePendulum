@@ -9,7 +9,11 @@ window = pygame.display.set_mode((Width, Height))
 # In pygame for some reason as you go down the y goes up :(
 grav = 981
 
+def calculate_distance(p1, p2):
+    return math.sqrt((p2[1] - p1[1]) ** 2 + (p2[0]-p1[0])**2)
 
+def calculate_angle(p1, p2):
+    return math.atan2(p2[1] - p1[1], p2[0]-p1[0])
 # Draw the simulation for me, anything I want to draw into the window will be done here, not the space, using pygame stuff
 def draw(space, window, draw_options):
     window.fill("white")
@@ -30,6 +34,8 @@ def create_boundary(space, width, height):
         body = pymunk.Body(body_type=pymunk.Body.STATIC)
         body.position = pos
         shape = pymunk.Poly.create_box(body, size)
+        shape.elasticity = .4
+        shape.friction = .5
         space.add(body, shape)
 
 
@@ -39,6 +45,8 @@ def create_ball(space, radius, mass):
     body.position = (300, 300)
     shape = pymunk.Circle(body, radius)
     shape.mass = mass
+    shape.elasticity = .9
+    shape.friction = .4
     shape.color = (255, 0, 0, 100)
     space.add(body, shape)
     return shape
@@ -65,6 +73,8 @@ def run(window, width, height):
             if event.type == pygame.QUIT:
                 run = False
                 break
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                ball.body.apply_impulse_at_local_point((30000, 0), (0,0))
         draw(space, window, draw_options)
         space.step(dt)
         clock.tick(fps)
