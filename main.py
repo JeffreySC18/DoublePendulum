@@ -62,6 +62,24 @@ def create_structure(space, width, height):
         shape.friction = .4
         space.add(body, shape)
 
+#def create_double_double(space):
+    #break
+def create_swinging_ball(space):
+    rotation_center_body = pymunk.Body(body_type=pymunk.Body.STATIC)
+    rotation_center_body.position = (600,280)
+
+    body = pymunk.Body()
+    body.position = (600,280)
+    line = pymunk.Segment(body, (0,0), (255,0), 5)
+    circle = pymunk.Circle(body, 40, (255,0))
+    line.friction = .1
+    circle.friction = .1
+    line.mass = 8
+    circle.mass = 30
+    circle.elasticity = .95
+    rotation_center_joint = pymunk.PinJoint(body, rotation_center_body, (0,0), (0,0))
+    space.add(circle, line, body, rotation_center_joint)
+
 # 0,0 is top left corner
 def create_ball(space, radius, mass, pos):
     body = pymunk.Body(body_type=pymunk.Body.STATIC)
@@ -69,7 +87,7 @@ def create_ball(space, radius, mass, pos):
     shape = pymunk.Circle(body, radius)
     shape.mass = mass
     shape.elasticity = .9
-    shape.friction = .4
+    shape.friction = .3
     shape.color = (255, 0, 0, 100)
     space.add(body, shape)
     return shape
@@ -78,7 +96,7 @@ def create_ball(space, radius, mass, pos):
 def run(window, width, height):
     run = True
     clock = pygame.time.Clock()
-    fps = 60
+    fps = 144
     dt = 1 / fps
 
     # Simulated space in pymunk
@@ -90,6 +108,8 @@ def run(window, width, height):
 
     create_boundary(space, width, height)
     create_structure(space, width, height)
+    create_swinging_ball(space)
+    #create_double_double(space)
 
     # PyMunk doesn't inherntly draw, so this is the machinery to draw stuff
     draw_options = pymunk.pygame_util.DrawOptions(window)
