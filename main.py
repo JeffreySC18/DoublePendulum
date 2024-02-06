@@ -48,7 +48,7 @@ def create_boundary(space, width, height):
 def create_structure(space, width, height):
     BROWN = (139, 69, 19, 100)
     rect = [
-        [(600, height-120), (40, 200), BROWN, 100],
+        [(600, height - 120), (40, 200), BROWN, 100],
         [(900, height - 120), (40, 200), BROWN, 100],
         [(750, height - 240), (340, 40), BROWN, 100]
     ]
@@ -62,23 +62,43 @@ def create_structure(space, width, height):
         shape.friction = .4
         space.add(body, shape)
 
-#def create_double_double(space):
-    #break
-def create_swinging_ball(space):
+
+def create_double_double(space):
     rotation_center_body = pymunk.Body(body_type=pymunk.Body.STATIC)
-    rotation_center_body.position = (600,280)
+    rotation_center_body.position = (600, 200)
+    second_rotation = pymunk.Body(body_type=pymunk.Body.DYNAMIC)
+    second_rotation.position = (715, 200)
 
     body = pymunk.Body()
-    body.position = (600,280)
-    line = pymunk.Segment(body, (0,0), (255,0), 5)
-    circle = pymunk.Circle(body, 40, (255,0))
+    body.position = (600, 280)
+    line = pymunk.Segment(body, (0, 0), (150, 0), 30)
+    line.friction = .1
+    line.mass = 8
+    line2 = pymunk.Segment(body, (150, 0), (300, 0), 30)
+    line2.friction = .1
+    line2.mass = 8
+
+    rotation_center_joint = pymunk.PinJoint(body, rotation_center_body, (0, 0), (0, 0))
+    second_joint = pymunk.PinJoint(body, second_rotation, (0,0), (0,0))
+    space.add(line, line2, body, rotation_center_joint, second_joint)
+
+
+def create_swinging_ball(space):
+    rotation_center_body = pymunk.Body(body_type=pymunk.Body.STATIC)
+    rotation_center_body.position = (600, 280)
+
+    body = pymunk.Body()
+    body.position = (600, 280)
+    line = pymunk.Segment(body, (0, 0), (255, 0), 5)
+    circle = pymunk.Circle(body, 40, (255, 0))
     line.friction = .1
     circle.friction = .1
     line.mass = 8
     circle.mass = 30
     circle.elasticity = .95
-    rotation_center_joint = pymunk.PinJoint(body, rotation_center_body, (0,0), (0,0))
+    rotation_center_joint = pymunk.PinJoint(body, rotation_center_body, (0, 0), (0, 0))
     space.add(circle, line, body, rotation_center_joint)
+
 
 # 0,0 is top left corner
 def create_ball(space, radius, mass, pos):
@@ -108,8 +128,8 @@ def run(window, width, height):
 
     create_boundary(space, width, height)
     create_structure(space, width, height)
-    create_swinging_ball(space)
-    #create_double_double(space)
+    #create_swinging_ball(space)
+    create_double_double(space)
 
     # PyMunk doesn't inherntly draw, so this is the machinery to draw stuff
     draw_options = pymunk.pygame_util.DrawOptions(window)
